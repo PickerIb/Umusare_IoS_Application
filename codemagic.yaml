@@ -1,13 +1,33 @@
 workflows:
-  build-android-release:
-    name: Build Android AAB
-    max_build_duration: 15
+  build-android-ios-all:
+    name: Build .aab, .apk and .ipa
+    max_build_duration: 60
     environment:
       flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars:
+        APP_ID: "com.example.umusare" # Change to your real App ID
     scripts:
-      - name: Get dependencies
+      - name: 🔄 Get dependencies
         script: flutter pub get
-      - name: Build AAB
+
+      - name: 📦 Build Android APK
+        script: flutter build apk --release
+
+      - name: 📦 Build Android AAB
         script: flutter build appbundle --release
+
+      - name: 🍎 Build iOS (no code signing)
+        script: flutter build ios --release --no-codesign
+
     artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
+      - build/ios/ipa/*.ipa
+      - build/ios/iphoneos/*.app
+
+    publishing:
+      email:
+        recipients:
+          - izukondibien@gmail.com
